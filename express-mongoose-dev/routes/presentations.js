@@ -93,4 +93,35 @@ router.get('/:id', (req, res, next) => {
 	});
 });
 
+router.delete('/:id', (req, res, next) => {
+	var token = req.headers.token;
+	var body = req.body;
+
+	
+	var user = User.findOne({_id: ObjectID(token)}, (err, user) => {
+		if (err) {
+			res.status(500);
+			res.send();
+		} else {
+			if (user != null) {
+				Presentation.findOneAndRemove({
+					_id: ObjectID(req.params.id),
+					user_id: ObjectID(token)
+				}, (err) => {
+					if (err) {
+						res.status(500);
+						res.send();
+					} else {
+						res.status(204);
+						res.send();
+					}
+				});
+			} else {
+				res.status(401);
+				res.send();
+			}
+		}
+	});
+});
+
 module.exports = router;
